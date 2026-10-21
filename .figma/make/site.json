@@ -1,0 +1,10 @@
+{
+  "description": "Enables disaster teams in Kerala to estimate affected populations and generate emergency resource plans through interactive mapping and data-driven tools.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
