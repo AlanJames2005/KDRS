@@ -1,5 +1,6 @@
 import rasterio
 from rasterio.mask import mask
+import os
 from pathlib import Path
 
 
@@ -7,7 +8,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Attached India population raster
-WORLDPOP_FILE = PROJECT_ROOT / "ind_pop_2025_CN_100m_R2025A_v1.tif"
+WORLDPOP_FILE = Path(os.environ.get(
+    "POPULATION_RASTER_PATH",
+    PROJECT_ROOT / "ind_pop_2025_CN_100m_R2025A_v1.tif"
+))
 
 
 def calculate_affected_population(disaster_geometry):

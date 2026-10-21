@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: kdrs-backend-alanjames2005
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health

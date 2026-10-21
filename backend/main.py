@@ -75,6 +75,11 @@ def home():
     }
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.post("/location/reverse")
 def detect_locality(request: ReverseGeocodeRequest):
     if not -90 <= request.latitude <= 90 or not -180 <= request.longitude <= 180:
