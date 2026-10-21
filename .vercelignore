@@ -1,0 +1,6 @@
+ind_pop_2025_CN_100m_R2025A_v1.tif
+backend/
+Dockerfile
+.dockerignore
+render.yaml
+requirements-backend.txt
