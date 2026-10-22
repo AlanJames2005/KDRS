@@ -69,10 +69,10 @@ function AppHeader({ screen }: { screen: "population" | "resources" }) {
     <>
       <header className="app-header">
         <div className="brand">
-          <div className="brand-mark" aria-hidden="true"><span>KER</span><i /></div>
+          <div className="brand-mark" aria-hidden="true"><span>MIPR</span><i /></div>
           <div>
-            <strong>Kerala Disaster Response System</strong>
-            <small>Emergency Planning &amp; Resource Intelligence</small>
+            <strong>Mission-Oriented Intelligent Procurement and Resource Management</strong>
+            <small>Mission Planning &amp; Resource Intelligence</small>
           </div>
         </div>
         <div className="header-actions">
@@ -84,7 +84,7 @@ function AppHeader({ screen }: { screen: "population" | "resources" }) {
       </header>
       <div className="context-bar">
         <span>Emergency Operations</span><Icon name="chevron" size={13} /><strong>{screen === "population" ? "Population Estimation" : "Resource Requirements"}</strong>
-        <span className="context-id">Mission ID · KDRS-2025-0814</span>
+        <span className="context-id">Mission ID · MIPRM-2025-0814</span>
       </div>
     </>
   );
@@ -810,8 +810,8 @@ function LandingNav({ onLaunch }: { onLaunch: () => void }) {
   }, []);
   return <nav className={`landing-nav ${scrolled ? "scrolled" : ""}`}>
     <button className="landing-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-      <span className="brand-mark"><span>KER</span><i /></span>
-      <span>Kerala Disaster<br />Response System</span>
+      <span className="brand-mark"><span>MIPR</span><i /></span>
+      <span>Mission-Oriented Intelligent<br />Procurement and Resource Management</span>
     </button>
     <div className="landing-links"><a href="#overview">Overview</a><a href="#how-it-works">How It Works</a><a href="#capabilities">Capabilities</a></div>
     <div className="landing-nav-actions"><span className="landing-operational"><i /> Operational</span><button onClick={onLaunch}>Launch Platform <Icon name="arrow" size={15} /></button></div>
@@ -820,7 +820,7 @@ function LandingNav({ onLaunch }: { onLaunch: () => void }) {
 
 function ProductPreview() {
   return <div className="product-window reveal-scale">
-    <div className="window-bar"><div><i /><i /><i /></div><span>Population Estimation · KDRS</span><strong><i /> Operational</strong></div>
+    <div className="window-bar"><div><i /><i /><i /></div><span>Population Estimation · MIPRM</span><strong><i /> Operational</strong></div>
     <div className="preview-shell">
       <div className="preview-sidebar">
         <div className="preview-title"><span><Icon name="alert" size={13} /></span><div><strong>Disaster Details</strong><small>Current assessment context</small></div></div>
@@ -867,7 +867,7 @@ function LandingPage({ onLaunch }: { onLaunch: () => void }) {
       <div className="hero-copy">
         <div className="hero-badge"><i /> EMERGENCY RESPONSE INTELLIGENCE</div>
         <h1>Turning Disaster Data<br />Into <em>Faster Response.</em></h1>
-        <p>Kerala Disaster Response System helps emergency teams transform affected-area data into actionable population estimates and essential resource requirements—enabling faster, more informed disaster response.</p>
+        <p>Mission-Oriented Intelligent Procurement and Resource Management helps emergency teams transform affected-area data into actionable population estimates and essential resource requirements—enabling faster, more informed disaster response.</p>
         <div className="hero-actions"><button className="hero-primary" onClick={onLaunch}><span>Start Response Planning</span><Icon name="arrow" /></button><button className="hero-secondary" onClick={scrollToHow}>Explore How It Works <span>↓</span></button></div>
         <div className="hero-trust"><span><Icon name="check" size={13} /> Map-led assessment</span><span><Icon name="check" size={13} /> Explainable planning</span><span><Icon name="check" size={13} /> Human-centered response</span></div>
       </div>
@@ -937,7 +937,7 @@ function LandingPage({ onLaunch }: { onLaunch: () => void }) {
       </section>
     </main>
     <footer className="landing-footer">
-      <div className="footer-top"><div className="footer-brand"><span className="brand-mark"><span>KER</span><i /></span><div><strong>Kerala Disaster Response System</strong><small>Emergency Planning &amp; Resource Intelligence</small></div></div><div className="footer-links"><a href="#overview">About</a><a href="#how-it-works">How It Works</a><a href="#capabilities">Platform</a><a href="mailto:response@kerala.gov.in">Contact</a></div></div>
+      <div className="footer-top"><div className="footer-brand"><span className="brand-mark"><span>MIPR</span><i /></span><div><strong>Mission-Oriented Intelligent Procurement and Resource Management</strong><small>Mission Planning &amp; Resource Intelligence</small></div></div><div className="footer-links"><a href="#overview">About</a><a href="#how-it-works">How It Works</a><a href="#capabilities">Platform</a><a href="mailto:response@kerala.gov.in">Contact</a></div></div>
       <div className="footer-bottom"><span>Designed for emergency planning and decision support. Kerala boundary: geoBoundaries / DataMeet, CC BY 2.5 IN.</span><span className="footer-status">Operational <i /></span></div>
     </footer>
   </div>;
