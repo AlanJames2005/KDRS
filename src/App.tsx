@@ -993,7 +993,24 @@ export default function App() {
   const [screen, setScreen] = useState<"landing" | "population" | "resources">("landing");
   const [estimate, setEstimate] = useState<PopulationEstimate | null>(null);
   const [toast, setToast] = useState("");
+  useEffect(() => {
+    window.history.replaceState({ ...window.history.state, kdrsScreen: "landing" }, "");
+    const handlePopState = (event: PopStateEvent) => {
+      const next = event.state?.kdrsScreen;
+      const nextScreen = next === "population" || next === "resources" ? next : "landing";
+      setScreen(nextScreen);
+      if (nextScreen === "landing") setEstimate(null);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
   const notify = (message: string) => { setToast(message); setTimeout(() => setToast(""), 3000); };
-  const go = (next: "landing" | "population" | "resources") => { setScreen(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  return <div className="app-shell">{screen === "landing" ? <LandingPage onLaunch={() => go("population")} /> : screen === "population" ? <PopulationScreen onBack={() => { setEstimate(null); go("landing"); }} onNext={() => go("resources")} onEstimated={setEstimate} notify={notify} /> : <ResourcesScreen onBack={() => go("population")} estimate={estimate} notify={notify} />}{toast && <Toast message={toast} />}</div>;
+  const go = (next: "population" | "resources") => {
+    window.history.pushState({ ...window.history.state, kdrsScreen: next }, "");
+    setScreen(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const goBack = () => window.history.back();
+  return <div className="app-shell">{screen === "landing" ? <LandingPage onLaunch={() => go("population")} /> : screen === "population" ? <PopulationScreen onBack={goBack} onNext={() => go("resources")} onEstimated={setEstimate} notify={notify} /> : <ResourcesScreen onBack={goBack} estimate={estimate} notify={notify} />}{toast && <Toast message={toast} />}</div>;
 }
