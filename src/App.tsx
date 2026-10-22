@@ -646,14 +646,51 @@ function formatRequirements(requirements: GeneratedRequirement[]): DisplayRequir
   });
 }
 
-function KeralaThumbnail() {
-  return <div className="kerala-thumb"><svg viewBox="0 0 100 160" aria-label="Selected Kerala area thumbnail"><path d="M48 5c17 17 16 38 28 54 9 12 5 26 12 38 8 14-4 24-8 35-6 15-17 24-29 22-13-2-16-20-24-33-7-14-17-25-15-40 2-14 13-23 18-36 6-15 2-31 18-40Z" fill="#c9ddd5" stroke="#488378" strokeWidth="2" /><path d="m23 69 18-11 24 8 8 19-12 18-26-3-17-16Z" fill="#0f9488" opacity=".7" /><circle cx="46" cy="81" r="4" fill="#fff" stroke="#087a71" strokeWidth="2" /></svg><span>Selected zone</span></div>;
+function KeralaThumbnail({ geometry }: { geometry: PopulationPolygon }) {
+  const [boundary, setBoundary] = useState<KeralaBoundaryGeometry | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetch("/kerala-boundary.geojson", { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Kerala boundary request failed (${response.status}).`);
+        return response.json() as Promise<{ features: Array<{ geometry: KeralaBoundaryGeometry }> }>;
+      })
+      .then((data) => {
+        const geometry = data.features[0]?.geometry;
+        if (!geometry || (geometry.type !== "Polygon" && geometry.type !== "MultiPolygon")) {
+          throw new Error("Kerala boundary data is unavailable.");
+        }
+        setBoundary(geometry);
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) console.error("Unable to display the Kerala boundary in mission details.", error);
+      });
+    return () => controller.abort();
+  }, []);
+  const boundaryPath = boundary ? keralaBoundaryPath(boundary) : "";
+  const selectionPath = boundary ? keralaBoundaryPath(geometry, boundary) : "";
+  return (
+    <div className="kerala-thumb">
+      <svg viewBox="0 0 110 150" role="img" aria-label="Selected zone on the Kerala map">
+        {boundaryPath && (
+          <>
+            <defs><clipPath id="mission-kerala-clip"><path d={boundaryPath} /></clipPath></defs>
+            <path d={boundaryPath} fill="#c9ddd5" stroke="#488378" strokeWidth="1.2" />
+            {selectionPath && (
+              <path d={selectionPath} fill="#0f9488" fillOpacity=".7" stroke="#087a71" strokeWidth="1" clipPath="url(#mission-kerala-clip)" />
+            )}
+          </>
+        )}
+      </svg>
+      <span>Selected zone</span>
+    </div>
+  );
 }
 
 function MissionDetails({ estimate }: { estimate: PopulationEstimate }) {
   return <section className="card mission-card"><div className="mission-info"><div className="card-title"><span className="title-icon"><Icon name="map" /></span><div><h2>Mission Details</h2><p>Verified assessment summary</p></div><span className="verified"><Icon name="check" size={13} /> Verified</span></div>
     <div className="mission-grid"><div><span>Disaster</span><strong>{estimate.disasterType}</strong></div><div><span>Location</span><strong>{estimate.location}</strong></div><div><span>Affected Population</span><strong className="number">{estimate.affectedPopulation.toLocaleString("en-IN")}</strong></div><div><span>Affected Area</span><strong>{estimate.affectedAreaKm2.toLocaleString("en-IN")} km²</strong></div><div><span>Assessment Status</span><strong className="status-text"><i /> Verified</strong></div></div>
-  </div><KeralaThumbnail /></section>;
+  </div><KeralaThumbnail geometry={estimate.geometry} /></section>;
 }
 
 function RequirementGenerator({ state, generate }: { state: string; generate: () => void }) {
@@ -724,11 +761,16 @@ type KeralaBoundaryGeometry =
   | { type: "Polygon"; coordinates: number[][][] }
   | { type: "MultiPolygon"; coordinates: number[][][][] };
 
-function keralaBoundaryPath(geometry: KeralaBoundaryGeometry): string {
-  const rings = geometry.type === "Polygon"
-    ? geometry.coordinates
-    : geometry.coordinates.flat();
-  const points = rings.flat();
+function geometryRings(geometry: KeralaBoundaryGeometry | PopulationPolygon): number[][][] {
+  return geometry.type === "Polygon" ? geometry.coordinates : geometry.coordinates.flat();
+}
+
+function keralaBoundaryPath(
+  geometry: KeralaBoundaryGeometry | PopulationPolygon,
+  boundsGeometry: KeralaBoundaryGeometry | PopulationPolygon = geometry,
+): string {
+  const rings = geometryRings(geometry);
+  const boundsPoints = geometryRings(boundsGeometry).flat();
   const project = ([longitude, latitude]: number[]) => {
     const radians = latitude * Math.PI / 180;
     return {
@@ -736,11 +778,11 @@ function keralaBoundaryPath(geometry: KeralaBoundaryGeometry): string {
       y: Math.log(Math.tan(Math.PI / 4 + radians / 2)),
     };
   };
-  const projected = points.map(project);
-  const minX = Math.min(...projected.map(({ x }) => x));
-  const maxX = Math.max(...projected.map(({ x }) => x));
-  const minY = Math.min(...projected.map(({ y }) => y));
-  const maxY = Math.max(...projected.map(({ y }) => y));
+  const projectedBounds = boundsPoints.map(project);
+  const minX = Math.min(...projectedBounds.map(({ x }) => x));
+  const maxX = Math.max(...projectedBounds.map(({ x }) => x));
+  const minY = Math.min(...projectedBounds.map(({ y }) => y));
+  const maxY = Math.max(...projectedBounds.map(({ y }) => y));
   const scale = Math.min(82 / (maxX - minX), 140 / (maxY - minY));
   const offsetX = (110 - (maxX - minX) * scale) / 2;
   const offsetY = (150 - (maxY - minY) * scale) / 2;
